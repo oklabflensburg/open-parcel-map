@@ -1,0 +1,16 @@
+.parcel-cache/
+node_modules/
+__MACOSX/
+venv/
+dist/
+.DS_Store
+.env
+.idea
+*.zip
+*.tgz
+*.suo
+*.local
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

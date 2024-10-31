@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html prefix="og: https://ogp.me/ns#" lang="de">
+<head>
+    <meta charset="utf-8">
+    <title>ALKIS Flurstücksauskunft Schleswig-Holstein</title>
+    <meta content="ALKIS® Flurstücksauskunft Schleswig-Holstein tbd.">
+    <meta property="og:locale" content="de_DE">
+    <meta property="og:title" content="ALKIS Flurstücksauskunft Schleswig-Holstein">
+    <meta property="og:site_name" content="ALKIS Flurstücksauskunft Schleswig-Holstein">
+    <meta property="og:url" content="https://flurstuecksauskunft.oklabflensburg.de">
+    <meta property="og:description" content="ALKIS Flurstücksauskunft ohne Eigentümerangaben mit den Datensatz vom Landesamt für Vermessung und Geoinformation Schleswig-Holstein">
+    <meta property="og:type" content="website">
+    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="main.css" rel="stylesheet">
+</head>
+
+<body class="relative flex justify-center flex-col h-dvh w-full">
+  <div class="relative sm:flex sm:flex-row w-full h-dvh overflow-hidden">
+    <div id="sidebarCloseWrapper" class="fixed right-3 top-3 z-1300 sm:hidden">
+      <a id="sidebarCloseButton" class="flex justify-center items-center relative inline-block shadow-md bg-gray-200 text-sky-900 hover:bg-gray-300 focus:bg-gray-300 active:bg-gray-300 rounded-full w-8 h-8 cursor-pointer font-bold" role="button">
+        <svg class="h-7 w-7 inline" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10.394 5.50735L3.9873 11.9473L10.394 18.3873C10.552 18.5949 10.8165 18.6912 11.071 18.6338C11.3254 18.5764 11.523 18.376 11.5767 18.1207C11.6305 17.8655 11.5304 17.6024 11.3206 17.4473L6.5273 12.614L19.2806 12.614C19.6488 12.614 19.9473 12.3155 19.9473 11.9473C19.9473 11.5792 19.6488 11.2807 19.2806 11.2807L6.5273 11.2807L11.3206 6.44735C11.5802 6.18593 11.5787 5.76359 11.3173 5.50401C11.0559 5.24444 10.6335 5.24593 10.374 5.50735H10.394Z"></path>
+        </svg>
+      </a>
+    </div>
+
+    <div class="h-dvh flex flex-col w-full xs:w-5/12 sm:w-6/12 md:w-7/12 lg:w-8/12 xl:w-9/12">
+      <div id="map" class="h-[95dvh] w-full"></div>
+      <footer class="grow w-full bg-gray-200 border-t md:border-t border-gray-300 text-sm flex justify-center items-center">
+        <a class="inline-block text-gray-700 hover:text-blue-800 focus:text-blue-800" href="./impressum.html">Impressum</a> <span class="inline-block text-gray-700 px-3">|</span> <a class="inline-block text-gray-700 hover:text-blue-800 focus:text-blue-800" href="./impressum.html#privacypolicy">Datenschutzerklärung</a> <span class="inline-block text-gray-700 px-3">|</span> <a class="inline-block text-gray-700 hover:text-blue-800 focus:text-blue-800" href="./lizenz.html">Lizenz</a>
+      </footer>
+    </div>
+
+    <div id="sidebar" class="absolute left-0 bottom-0 h-dvh sm:block sm:relative w-full xs:w-7/12 sm:w-6/12 md:w-5/12 lg:w-4/12 xl:w-3/12 overflow-scroll bg-gray-100 z-1200">
+      <div id="sidebarContentCloseWrapper" class="absolute right-3 top-3 z-1300 sm:hidden">
+        <a id="sidebarContentCloseButton" class="flex justify-center items-center relative inline-block shadow-md bg-gray-200 text-sky-900 hover:bg-gray-300 focus:bg-gray-300 active:bg-gray-300 rounded-full w-8 h-8 cursor-pointer font-bold" role="button">
+          <svg class="h-5 w-5 inline" viewBox="0 0 50 50" fill="currentColor" xmlns="http://www.w3.org/2000/svg" stroke-width="0">
+            <path d="M 9.15625 6.3125 L 6.3125 9.15625 L 22.15625 25 L 6.21875 40.96875 L 9.03125 43.78125 L 25 27.84375 L 40.9375 43.78125 L 43.78125 40.9375 L 27.84375 25 L 43.6875 9.15625 L 40.84375 6.3125 L 25 22.15625 Z" />
+          </svg>
+        </a>
+      </div>
+
+      <div id="sidebarHeader" class="py-2 px-3 mb-4 lg:mb-8">
+        <h1 class="tracking-normal leading-normal font-bold text-2xl md:text-3xl lg:text-4xl mb-1">Flurstücksauskunft</h1>
+        <h2><a href="/" class="text-xl md:text-2xl text-gray-700 hover:text-blue-700 focus:text-blue-800" title="Schleswig-Holstein">ALKIS Schleswig-Holstein</a></h2>
+      </div>
+
+      <div class="mt-3 md:mt-6 py-2 px-3" id="about">
+        <h3 class="font-bold text-xl md:text-2xl mb-1">Hintergrund</h3>
+        <p class="font-normal leading-normal text-md lg:text-lg mb-3 md:mb-6">Diese interaktive nicht amtliche Flurstücksauskunft ohne Eigentümerangaben für Schleswig-Holstein entstand nach Gesprächen mit Bürgerinitiativen durch das OK Lab Flensburg um Verwaltungs-, Kreis-, Gemeindegrenzen, Gemarkungen und Flurstücke digital zugänglich zu machen. Wir freuen uns über Anregungen, Kritik oder Ergänzungen – schreiben Sie uns gerne eine <a class="contact-mail text-blue-600 hover:text-blue-400 focus:text-blue-400" href="" target="_blank"></a>.</p>
+        <h3 class="font-bold text-xl md:text-2xl mb-1">Datenquelle</h3>
+        <p class="font-normal leading-normal text-md lg:text-lg mb-3 md:mb-6">Der Datensatz ALKIS Schleswig-Holstein ohne Eigentümerangaben, wird durch das Landesamt für Vermessung und Geoinformation im Open-Data Portal Schleswig-Holstein <a class="text-blue-600 hover:text-blue-400 focus:text-blue-400" href="https://opendata.schleswig-holstein.de/dataset/alkis-schleswig-holstein-ohne-eigentumerangaben" target="_blank">zum Download</a> zur Verfügung gestellt. Die Flurstücksauskunft wird von engagierten ehrenamtlichen Mitgliedern des OK Lab Flensburgs entwickelt.</p>
+        <h3 class="font-bold text-xl md:text-2xl mb-1">Aktualität</h3>
+        <p class="font-normal leading-normal text-md lg:text-lg mb-3 md:mb-6">Diese Website wurde zuletzt am 30. Oktober 2024 mit dem Datensatz vom 29. Oktober 2024 aktualisiert.</p>
+        <h3 class="font-bold text-xl md:text-2xl mb-1">Quellcode</h3>
+        <p class="font-normal leading-normal text-md lg:text-lg">Der aktuelle Entwicklungsstand kann auf <a class="text-blue-600 hover:text-blue-400 focus:text-blue-400" href="https://github.com/oklabflensburg/open-parcel-map" target="_blank">GitHub</a> eingesehen werden und von jeder Person, Kommune, Stadt oder Land kostenfrei und lizenzfrei genutzt und redeployed werden.</p>
+      </div>
+
+      <div id="sidebarContent" class="relative bg-white border border-slate-300 leading-normal lg:text-lg m-3 rounded text-black text-md hidden">
+        <ul class="p-3 space-y-3" id="detailList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

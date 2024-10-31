@@ -1,0 +1,225 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, sans-serif;
+}
+
+@supports (font-variation-settings: normal) {
+  :root {
+    font-family: InterVariable, sans-serif; font-optical-sizing: auto;
+  }
+}
+
+@font-face {
+  font-family: InterVariable;
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../static/fonts/InterVariable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: InterVariable;
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../static/fonts/InterVariable-Italic.woff2') format('woff2');
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+.table {
+  border-collapse: separate;
+  border-spacing: 5em;
+}
+
+.ribbon {
+  --f: .5em; /* control the folded part*/
+  --r: .8em; /* control the ribbon shape */
+
+  right: calc(-1*var(--f));
+  line-height: 1.8;
+  border-bottom: var(--f) solid #0005;
+  border-left: var(--r) solid #0000;
+  clip-path:
+    polygon(var(--r) 0,100% 0,100% calc(100% - var(--f)),calc(100% - var(--f)) 100%,
+      calc(100% - var(--f)) calc(100% - var(--f)),var(--r) calc(100% - var(--f)),
+      0 calc(50% - var(--f)/2));
+}
+
+.list-dash {
+  list-style-type: '- '
+}
+
+.list-circle {
+  list-style-type: circle;
+}
+
+.list-square {
+  list-style-type: square;
+}
+
+.list-decimal-leading-zero {
+  list-style-type: decimal-leading-zero;
+}
+
+.list-lower-roman {
+  list-style-type: lower-roman;
+}
+
+.list-upper-roman {
+  list-style-type: upper-roman;
+}
+
+.list-lower-greek {
+  list-style-type: lower-greek;
+}
+
+.list-lower-latin {
+  list-style-type: lower-latin;
+}
+
+.list-upper-latin {
+  list-style-type: upper-latin;
+}
+
+.list-armenian {
+  list-style-type: armenian;
+}
+
+.list-georgian {
+  list-style-type: georgian;
+}
+
+.list-lower-alpha {
+  list-style-type: lower-alpha;
+}
+
+.list-upper-alpha {
+  list-style-type: upper-alpha;
+}
+
+.leaflet-popup-content {
+  margin: 7px 37px 7px 8px;
+  line-height: 1.4;
+  font-size: 1.3em;
+}
+
+.leaflet-control-geocoder-icon {
+  background-color: #fff !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12.2 13l3.4 6.6c.6 1.1 2.5-.4 2-1.2l-4-6.2z'/%3E%3Ccircle cx='10.8' cy='8.9' r='3.9' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") !important;
+}
+
+.marker-cluster-small {
+  background-color: rgb(64 64 65 / 50%);
+}
+
+.marker-cluster-small div {
+  background-color: rgb(64 64 65 / 70%);
+}
+
+.marker-cluster-medium {
+  background-color: rgb(64 64 65 / 50%);
+}
+
+.marker-cluster-medium div {
+  background-color: rgb(64 64 65 / 70%);
+}
+
+.marker-cluster-large {
+  background-color: rgb(64 64 65 / 50%);
+}
+
+.marker-cluster-large div {
+  background-color: rgb(64 64 65 / 70%);
+}
+
+.marker-cluster {
+  background-clip: padding-box;
+  border-radius: 20px;
+}
+
+.marker-cluster div {
+  width: 30px;
+  height: 30px;
+  margin-left: 5px;
+  margin-top: 5px;
+  text-align: center;
+  border-radius: 15px;
+  font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+
+.marker-cluster span {
+  color: #fff;
+  line-height: 30px;
+}
+
+/* IE 6-8 fallback colors */
+.leaflet-oldie .marker-cluster-small {
+  background-color: rgb(64 64 65 / 70%);
+}
+
+.leaflet-oldie .marker-cluster-small div {
+  background-color: rgb(64 64 65 / 70%);
+}
+
+.leaflet-oldie .marker-cluster-medium {
+  background-color: rgb(64 64 65 / 70%);
+}
+
+.leaflet-oldie .marker-cluster-medium div {
+  background-color: rgb(64 64 65 / 70%);
+}
+
+.leaflet-oldie .marker-cluster-large {
+  background-color: rgb(64 64 65 / 70%);
+}
+
+.leaflet-oldie .marker-cluster-large div {
+  background-color: rgb(64 64 65 / 70%);
+}
+
+
+
+.leaflet-left {
+  right: 0;
+}
+
+.leaflet-top {
+  bottom: 0;
+}
+
+  @media (width >= 640px) {
+    .sm\:container {
+      max-width: 640px;
+    }
+  }
+
+  @media (width >= 768px) {
+    .sm\:container {
+      max-width: 768px;
+    }
+  }
+
+  @media (width >= 1024px) {
+    .sm\:container {
+      max-width: 1024px;
+    }
+  }
+
+  @media (width >= 1280px) {
+    .sm\:container {
+      max-width: 1280px;
+    }
+  }
+
+  @media (width >= 1536px) {
+    .sm\:container {
+      max-width: 1536px;
+    }
+  }
