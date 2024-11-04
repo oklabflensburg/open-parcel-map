@@ -80,6 +80,51 @@ DB_PORT=5432
 ```
 
 
+
+## Download ALKIS®
+
+Tool to automate the download from the opendata [ALKIS®](https://geodaten.schleswig-holstein.de/gaialight-sh/_apps/dladownload/dl-alkis.html) files for Schleswig-Holstein
+
+```
+cd tools
+python3 -m venv venv
+source venv/bin/activate
+pip3 install -r requirements.txt
+python3 alkis_downloader.py 1 18000 --path /data --verbose
+deactivate
+```
+
+
+
+## Import ALKIS®
+
+Make sure to adapt database connection string to your needs
+
+```
+cd /data/sh/alkis
+for i in *.zip; do f=$(basename $i | sed -e 's/.zip$//'); n=$(echo $f | sed -e 's/.*_//'); echo $n; unzip -o $f && [[ -e ${n}.xml ]] || gunzip "${n}.xml.gz" && ogr2ogr -f "PostgreSQL" PG:"dbname=oklab user=oklab port=5432 host=localhost" -nlt CONVERT_TO_LINEAR  -lco GEOMETRY_NAME=geom -lco SPATIAL_INDEX=GIST -update -overwrite -skipfailures -s_srs EPSG:25832 -t_srs EPSG:4326 -progress --config PG_USE_COPY YES $n.xml ax_flurstueck ax_gebaeude && rm -v ${n}.gfs ${n}.xml; done
+```
+
+
+
+## SH ALKIS Flurstücke inserts
+
+
+```
+psql -U oklab -h localhost -d oklab -p 5432 < ../data/sh_alkis_parcel_schema.sql
+```
+
+```
+cd tools
+python3 -m venv venv
+source venv/bin/activate
+pip3 install -r requirements.txt
+python3 insert_alkis_csv.py --env ../.env --src ../data/sh/alkis/flur_test_1.csv --verbose
+deactivate
+```
+
+
+
 ## LICENSE
 
 [CC0-1.0](LICENSE)
