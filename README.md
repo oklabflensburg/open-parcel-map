@@ -119,7 +119,7 @@ cd tools
 python3 -m venv venv
 source venv/bin/activate
 pip3 install -r requirements.txt
-python3 insert_alkis_csv.py --env ../.env --src ../data/sh/alkis/flur_test_1.csv --verbose
+python3 insert_parcel_csv.py --env ../.env --src ../data/sh/alkis/flur_test_1.csv --verbose
 deactivate
 ```
 
