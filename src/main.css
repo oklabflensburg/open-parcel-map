@@ -39,7 +39,7 @@ html, body {
 }
 
 .ribbon {
-  --f: .5em; /* control the folded part*/
+  --f: .5em; /* control the folded part */
   --r: .8em; /* control the ribbon shape */
 
   right: calc(-1*var(--f));

@@ -91,8 +91,8 @@ function renderBiotopeMeta(data) {
   }
 
   if (data['valuable_biotope'] !== undefined && data['valuable_biotope'] === 1) {
-    let ribbonElement = document.createElement('div')
-    let ribbonTextNode = document.createTextNode('Wertbiotop')
+    const ribbonElement = document.createElement('div')
+    const ribbonTextNode = document.createTextNode('Wertbiotop')
 
     ribbonElement.id = 'ribbonElement'
     ribbonElement.append(ribbonTextNode)
