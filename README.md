@@ -6,7 +6,7 @@
 [![Lighthouse CI](https://github.com/oklabflensburg/open-parcel-map/actions/workflows/lighthouse.yml/badge.svg)](https://github.com/oklabflensburg/open-parcel-map/actions/workflows/lighthouse.yml)
 
 
-![Screenshot der interaktiven Flurstücksauskunft](https://raw.githubusercontent.com/oklabflensburg/open-parcel-map/main/screenshot_biotopkarte.webp)
+![Screenshot der interaktiven Flurstücksauskunft](https://raw.githubusercontent.com/oklabflensburg/open-parcel-map/main/screenshot_flurstuecksauskunft.webp)
 
 _Haftungsausschluss: Dieses Repository und die zugehörige Datenbank befinden sich derzeit in einer Beta-Version. Einige Aspekte des Codes und der Daten können noch Fehler enthalten. Bitte kontaktieren Sie uns per E-Mail oder erstellen Sie ein Issue auf GitHub, wenn Sie einen Fehler entdecken._
 
