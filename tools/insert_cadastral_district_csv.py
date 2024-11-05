@@ -47,22 +47,24 @@ def connect_database(env_path):
 
 
 def insert_row(cur, row):
-    ags = row['ags']
-    gemeindename = row['gemeindename']
-    gemarkungsnummer = int(row['gemarkungsnummer'])
-    gemarkungsname = row['gemarkungsname']
+    official_municipality_key = row['ags']
+    municipality_name = row['gemeindename']
+    cadastral_district_number = int(row['gemarkungsnummer'])
+    cadastral_district_name = row['gemarkungsname']
 
     sql = '''
-        INSERT INTO de_land_parcel_meta (ags, gemeindename, gemarkungsnummer, gemarkungsname)
+        INSERT INTO de_cadastral_district_meta (official_municipality_key,
+            municipality_name, cadastral_district_number, cadastral_district_name)
         VALUES (%s, %s, %s, %s) RETURNING id
     '''
 
     try:
-        cur.execute(sql, (ags, gemeindename, gemarkungsnummer, gemarkungsname))
+        cur.execute(sql, (official_municipality_key, municipality_name,
+            cadastral_district_number, cadastral_district_name))
 
         last_inserted_id = cur.fetchone()[0]
 
-        log.info(f'inserted {gemarkungsname} with id {last_inserted_id}')
+        log.info(f'inserted {cadastral_district_name} with id {last_inserted_id}')
     except Exception as e:
         log.error(e)
 

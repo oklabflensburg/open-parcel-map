@@ -54,19 +54,29 @@ def parse_datetime(s):
     return datetime.strptime(s, "%Y-%m-%dT%H:%M:%SZ")
 
 
+def parse_value(value, conversion_func=None):
+    if value is None or value == '':
+        return None
+
+    if conversion_func:
+        return conversion_func(value)
+
+    return value
+
+
 def insert_row(cur, row):
-    adv_id = row['adv_id']
-    beginnt = parse_datetime(row['beginnt']) if row['beginnt'] else None
-    land = row['land'] if row['land'] else None
-    regierungsbezirk = int(row['regierungsbezirk']) if row['regierungsbezirk'] else None
-    kreis = int(row['kreis']) if row['kreis'] else None
-    gemeinde = row['gemeinde'] if row['gemeinde'] else None
-    gemarkungsnummer = int(row['gemarkungsnummer']) if row['gemarkungsnummer'] else None
-    flurnummer = int(row['flurnummer']) if row['flurnummer'] else None
-    nenner = int(row['nenner']) if row['nenner'] else None
-    zaehler = int(row['zaehler']) if row['zaehler'] else None
-    abweichender_rechtszustand = str_to_bool(row['abweichender_rechtszustand']) if row['abweichender_rechtszustand'] else None
-    wkt_geometry = row['wkt_geometry']
+    adv_id = parse_value(row.get('adv_id'))
+    start_time = parse_value(row.get('beginnt'), parse_datetime)
+    state_number = parse_value(row.get('land'))
+    administrative_district_number = parse_value(row.get('regierungsbezirk'), int)
+    county_number = parse_value(row.get('kreis'), int)
+    municipality_name = parse_value(row.get('gemeinde'))
+    cadastral_district_number = parse_value(row.get('gemarkungsnummer'), int)
+    field_number_original = parse_value(row.get('flurnummer'))
+    denominator = parse_value(row.get('nenner'), int)
+    numerator = parse_value(row.get('zaehler'), int)
+    different_legal_status = parse_value(row.get('abweichender_rechtszustand'), str_to_bool)
+    wkt_geometry = row.get('wkt_geometry')
 
     # Parse the identifier and the polygon coordinates
     match = re.match(r'Polygon\(\((.*?)\)\)', wkt_geometry)
@@ -75,14 +85,18 @@ def insert_row(cur, row):
     wkt_geometry = f'POLYGON(({coordinates}))'
 
     sql = '''
-        INSERT INTO sh_alkis_parcel (adv_id, beginnt, land, regierungsbezirk, kreis, gemeinde,
-            gemarkungsnummer, flurnummer, nenner, zaehler, abweichender_rechtszustand, wkb_geometry)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, ST_AsBinary(ST_Transform(ST_GeomFromText(%s, 25832), 4326))) RETURNING id
+        INSERT INTO sh_alkis_parcel (adv_id, start_time, state_number,
+            administrative_district_number, county_number, municipality_name,
+            cadastral_district_number, field_number_original, denominator, numerator,
+            different_legal_status, wkb_geometry)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+            ST_AsBinary(ST_Transform(ST_GeomFromText(%s, 25832), 4326))) RETURNING id
     '''
 
     try:
-        cur.execute(sql, (adv_id, beginnt, land, regierungsbezirk, kreis, gemeinde,
-            gemarkungsnummer, flurnummer, nenner, zaehler, abweichender_rechtszustand, wkt_geometry))
+        cur.execute(sql, (adv_id, start_time, state_number, administrative_district_number,
+            county_number, municipality_name, cadastral_district_number, field_number_original,
+            denominator, numerator, different_legal_status, wkt_geometry))
 
         last_inserted_id = cur.fetchone()[0]
 

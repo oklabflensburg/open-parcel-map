@@ -130,7 +130,7 @@ deactivate
 Tool zum importieren der Meta Daten der Gemarkungen in Deutschland
 
 ```
-psql -U oklab -h localhost -d oklab -p 5432 < ../data/de_land_parcel_meta_schema.sql
+psql -U oklab -h localhost -d oklab -p 5432 < ../data/de_cadastral_district_meta_schema.sql
 ```
 
 ```
@@ -138,7 +138,7 @@ cd tools
 python3 -m venv venv
 source venv/bin/activate
 pip3 install -r requirements.txt
-python3 insert_land_parcel_csv.py --env ../.env --src ../data/gemarkungen_deutschland.csv --verbose
+python3 insert_cadastral_district_csv.py --env ../.env --src ../data/gemarkungen_deutschland.csv --verbose
 deactivate
 ```
 
