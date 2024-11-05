@@ -43,7 +43,7 @@ function formatToAreaNumber(number) {
 }
 
 
-function renderBiotopeMeta(data) {
+function renderParcelMeta(data) {
   if (currentLayer) {
     map.removeLayer(currentLayer)
   }
@@ -62,20 +62,20 @@ function renderBiotopeMeta(data) {
 
   let detailOutput = ''
 
-  if (data['district'] !== null) {
-    detailOutput += `<li><strong>Landkreis</strong><br><ul>${data['district']}</ul></li>`
-  }
-
-  if (data['municipality'] !== null) {
-    detailOutput += `<li><strong>Gemeinde</strong><br>${data['municipality']}</li>`
-  }
-
   if (data['parcel_number'] !== null) {
-    detailOutput += `<li><strong>Gemarkungsnummer</strong><br>${data['parcel_number']}</li>`
+    detailOutput += `<li><strong>Flurstück</strong><br>${data['parcel_number']}</li>`
   }
 
-  if (data['field_number'] !== null) {
-    detailOutput += `<li><strong>Flurnummer</strong><br>${data['field_number']}</li>`
+  if (data['field_parcel_number'] !== null) {
+    detailOutput += `<li><strong>Flur</strong><br>${data['field_parcel_number']}</li>`
+  }
+
+  if (data['land_parcel_name'] !== null) {
+    detailOutput += `<li><strong>Gemarkung</strong><br>${data['land_parcel_name']}</li>`
+  }
+
+  if (data['municipality_name'] !== null) {
+    detailOutput += `<li><strong>Gemeinde</strong><br>${data['municipality_name']}</li>`
   }
 
   if (data['shape_area'] > 0) {
@@ -84,23 +84,8 @@ function renderBiotopeMeta(data) {
   }
 
   const detailList = document.querySelector('#detailList')
-  const ribbonValuableBiotope = document.querySelector('#ribbonElement')
 
-  if (ribbonValuableBiotope) {
-    ribbonValuableBiotope.remove()
-  }
-
-  if (data['valuable_biotope'] !== undefined && data['valuable_biotope'] === 1) {
-    const ribbonElement = document.createElement('div')
-    const ribbonTextNode = document.createTextNode('Wertbiotop')
-
-    ribbonElement.id = 'ribbonElement'
-    ribbonElement.append(ribbonTextNode)
-    ribbonElement.classList.add('ribbon', 'top-2', 'absolute', 'text-base', 'text-zinc-900', 'font-mono', 'bg-emerald-200', 'tracking-normal', 'ps-2.5', 'pe-3.5')
-    detailList.parentNode.insertBefore(ribbonElement, detailList)
-  }
-
-  detailList.innerHTML = detailOutput
+  document.querySelector('#detailList').innerHTML = detailOutput
   document.querySelector('#sidebar').classList.remove('hidden')
   document.querySelector('#sidebar').classList.add('absolute')
   document.querySelector('#about').classList.add('hidden')
@@ -108,19 +93,12 @@ function renderBiotopeMeta(data) {
 }
 
 
-function cleanBiotopeMeta() {
+function cleanParcelMeta() {
   if (currentLayer) {
     map.removeLayer(currentLayer)
   }
 
-  const detailList = document.querySelector('#detailList')
-  const ribbonValuableBiotope = document.querySelector('#ribbonElement')
-
-  if (ribbonValuableBiotope) {
-    ribbonValuableBiotope.remove()
-  }
-
-  detailList.innerHTML = ''
+  document.querySelector('#detailList').innerHTML = ''
   document.querySelector('#sidebar').classList.add('hidden')
   document.querySelector('#sidebar').classList.remove('absolute')
   document.querySelector('#about').classList.remove('hidden')
@@ -128,21 +106,20 @@ function cleanBiotopeMeta() {
 }
 
 
-function fetchBiotopeMeta(lat, lng) {
+function fetchParcelMeta(lat, lng) {
   const url = `https://api.oklabflensburg.de/alkis/v1/parcel?lat=${lat}&lng=${lng}`
-  // const url = `http://localhost:8000/alkis/v1/parcel?lat=${lat}&lng=${lng}`
 
   try {
     fetch(url, {
       method: 'GET'
     }).then((response) => response.json()).then((data) => {
-      renderBiotopeMeta(data)
+      renderParcelMeta(data)
     }).catch(function (error) {
-      cleanBiotopeMeta()
+      cleanParcelMeta()
     })
   }
   catch {
-    cleanBiotopeMeta()
+    cleanParcelMeta()
   }
 }
 
@@ -175,15 +152,15 @@ function handleWindowSize() {
 
 document.addEventListener('DOMContentLoaded', function () {
   L.tileLayer('https://tiles.oklabflensburg.de/sgm/{z}/{x}/{y}.png', {
-    maxZoom: 22,
+    maxZoom: 20,
     tileSize: 256,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="dc:rights">OpenStreetMap</a> contributors'
   }).addTo(map)
 
   L.tileLayer('https://tiles.oklabflensburg.de/shalkislot/{z}/{x}/{y}.png', {
     opacity: 0.9,
-    maxZoom: 22,
-    maxNativeZoom: 22,
+    maxZoom: 20,
+    maxNativeZoom: 20,
     attribution: '&copy; <a href="https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/LVERMGEOSH" target="_blank" rel="dc:rights">GeoBasis-DE/LVermGeo SH</a>/<a href="https://creativecommons.org/licenses/by/4.0" target="_blank" rel="dc:rights">CC BY 4.0</a>'
   }).addTo(map)
 
@@ -191,13 +168,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const lat = e.latlng.lat
     const lng = e.latlng.lng
 
-    fetchBiotopeMeta(lat, lng)
+    fetchParcelMeta(lat, lng)
   })
 
   document.querySelector('#sidebarContentCloseButton').addEventListener('click', function (e) {
     e.preventDefault()
 
-    cleanBiotopeMeta()
+    cleanParcelMeta()
   })
 
   document.querySelector('#sidebarCloseButton').addEventListener('click', function (e) {
@@ -209,7 +186,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     history.replaceState({ screen: 'home' }, '', '/')
   })
-
 
   const layers = {
     'layer1': L.tileLayer('https://tiles.oklabflensburg.de/nksh/{z}/{x}/{y}.png', {
