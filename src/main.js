@@ -66,12 +66,12 @@ function renderParcelMeta(data) {
     detailOutput += `<li><strong>Flurstück</strong><br>${data['parcel_number']}</li>`
   }
 
-  if (data['field_parcel_number'] !== null) {
-    detailOutput += `<li><strong>Flur</strong><br>${data['field_parcel_number']}</li>`
+  if (data['field_number'] !== null) {
+    detailOutput += `<li><strong>Flur</strong><br>${data['field_number']}</li>`
   }
 
-  if (data['land_parcel_name'] !== null) {
-    detailOutput += `<li><strong>Gemarkung</strong><br>${data['land_parcel_name']}</li>`
+  if (data['cadastral_district_name'] !== null) {
+    detailOutput += `<li><strong>Gemarkung</strong><br>${data['cadastral_district_name']}</li>`
   }
 
   if (data['municipality_name'] !== null) {
