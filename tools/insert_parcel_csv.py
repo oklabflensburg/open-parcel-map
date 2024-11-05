@@ -70,7 +70,7 @@ def insert_row(cur, row):
     state_number = parse_value(row.get('land'))
     administrative_district_number = parse_value(row.get('regierungsbezirk'), int)
     county_number = parse_value(row.get('kreis'), int)
-    municipality_name = parse_value(row.get('gemeinde'))
+    municipality_number = parse_value(row.get('gemeinde'), int)
     cadastral_district_number = parse_value(row.get('gemarkungsnummer'), int)
     field_number_original = parse_value(row.get('flurnummer'))
     denominator = parse_value(row.get('nenner'), int)
@@ -86,7 +86,7 @@ def insert_row(cur, row):
 
     sql = '''
         INSERT INTO sh_alkis_parcel (adv_id, start_time, state_number,
-            administrative_district_number, county_number, municipality_name,
+            administrative_district_number, county_number, municipality_number,
             cadastral_district_number, field_number_original, denominator, numerator,
             different_legal_status, wkb_geometry)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
@@ -95,7 +95,7 @@ def insert_row(cur, row):
 
     try:
         cur.execute(sql, (adv_id, start_time, state_number, administrative_district_number,
-            county_number, municipality_name, cadastral_district_number, field_number_original,
+            county_number, municipality_number, cadastral_district_number, field_number_original,
             denominator, numerator, different_legal_status, wkt_geometry))
 
         last_inserted_id = cur.fetchone()[0]

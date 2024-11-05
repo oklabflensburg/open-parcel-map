@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS sh_alkis_parcel (
   adv_id VARCHAR,
   state_number VARCHAR,
   county_number INT,
-  municipality_name VARCHAR,
+  municipality_number INT,
   administrative_district_number INT,
   cadastral_district_number INT NOT NULL,
   parcel_number TEXT GENERATED ALWAYS AS (
