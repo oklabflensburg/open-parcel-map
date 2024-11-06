@@ -8,20 +8,17 @@ env.injectLinkContent('.contact-mail', 'mailto:', '', env.contactMail, 'E-Mail')
 
 
 const center = [54.79443515, 9.43205485]
-
-let currentLayer = null
-
-var map = L.map('map', {
+const map = L.map('map', {
   zoomControl: false
 }).setView(center, 13)
 
-var zoomControl = L.control.zoom({
-  position: 'bottomright'
-}).addTo(map)
+let currentLayer = null
 
 
 function formatPlaceName(placeName) {
-  return placeName.replace(', Stadt', '')
+  const reversePlaceName = placeName.split(', ').reverse().join(' ')
+
+  return reversePlaceName
 }
 
 
@@ -52,9 +49,9 @@ function renderParcelMeta(data) {
 
   currentLayer = L.geoJSON(feature, {
     style: {
-      'color': '#0069f6',
-      'weight': 2,
-      'fillOpacity': 0.1
+      color: '#0069f6',
+      fillOpacity: 0.1,
+      weight: 2
     }
   }).addTo(map)
 
@@ -75,7 +72,8 @@ function renderParcelMeta(data) {
   }
 
   if (data['municipality_name'] !== null) {
-    detailOutput += `<li><strong>Gemeinde</strong><br>${data['municipality_name']}</li>`
+    const placeName = formatPlaceName(data['municipality_name'])
+    detailOutput += `<li><strong>Gemeinde</strong><br>${placeName}</li>`
   }
 
   if (data['shape_area'] > 0) {
@@ -137,28 +135,27 @@ function updateScreen(screen) {
 function handleWindowSize() {
   const innerWidth = window.innerWidth
 
-  if (innerWidth >= 1024) {
-    map.removeControl(zoomControl)
-
-    zoomControl = L.control.zoom({
-      position: 'topleft'
-    }).addTo(map)
-  }
-  else {
-    map.removeControl(zoomControl)
-  }
+  return true
 }
 
 
 document.addEventListener('DOMContentLoaded', function () {
-  L.tileLayer('https://tiles.oklabflensburg.de/sgm/{z}/{x}/{y}.png', {
+  L.tileLayer('http://tiles.oklabflensburg.de/sgm/{z}/{x}/{y}.png', {
     maxZoom: 20,
-    tileSize: 256,
+    maxNativeZoom: 20,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="dc:rights">OpenStreetMap</a> contributors'
   }).addTo(map)
 
-  L.tileLayer('https://tiles.oklabflensburg.de/shalkislot/{z}/{x}/{y}.png', {
-    opacity: 0.9,
+  /*
+  L.tileLayer('http://tiles.oklabflensburg.de/nksh/{z}/{x}/{y}.png', {
+    opacity: 0.4,
+    maxZoom: 20,
+    maxNativeZoom: 20,
+    attribution: '&copy; <a href="https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/LFU" target="_blank" rel="dc:rights">LfU SH</a>/<a href="https://www.govdata.de/dl-de/by-2-0" target="_blank" rel="dc:rights">dl-de/by-2-0</a>'
+  }).addTo(map)
+  */
+
+  L.tileLayer('http://tiles.oklabflensburg.de/shalkislot/{z}/{x}/{y}.png', {
     maxZoom: 20,
     maxNativeZoom: 20,
     attribution: '&copy; <a href="https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/LVERMGEOSH" target="_blank" rel="dc:rights">GeoBasis-DE/LVermGeo SH</a>/<a href="https://creativecommons.org/licenses/by/4.0" target="_blank" rel="dc:rights">CC BY 4.0</a>'
@@ -186,26 +183,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     history.replaceState({ screen: 'home' }, '', '/')
   })
-
-  const layers = {
-    'layer1': L.tileLayer('https://tiles.oklabflensburg.de/nksh/{z}/{x}/{y}.png', {
-      opacity: 0.7,
-      maxZoom: 20,
-      maxNativeZoom: 20
-    })
-  }
-
-  window.toggleLayer = function (element) {
-    const layerName = element.id
-    const layer = layers[layerName]
-
-    if (element.checked && !map.hasLayer(layer)) {
-      map.addLayer(layer)
-    }
-    else if (map.hasLayer(layer)) {
-      map.removeLayer(layer)
-    }
-  }
 })
 
 
