@@ -140,14 +140,14 @@ function handleWindowSize() {
 
 
 document.addEventListener('DOMContentLoaded', function () {
-  L.tileLayer('http://tiles.oklabflensburg.de/sgm/{z}/{x}/{y}.png', {
+  L.tileLayer('https://tiles.oklabflensburg.de/sgm/{z}/{x}/{y}.png', {
     maxZoom: 20,
     maxNativeZoom: 20,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="dc:rights">OpenStreetMap</a> contributors'
   }).addTo(map)
 
   /*
-  L.tileLayer('http://tiles.oklabflensburg.de/nksh/{z}/{x}/{y}.png', {
+  L.tileLayer('https://tiles.oklabflensburg.de/nksh/{z}/{x}/{y}.png', {
     opacity: 0.4,
     maxZoom: 20,
     maxNativeZoom: 20,
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }).addTo(map)
   */
 
-  L.tileLayer('http://tiles.oklabflensburg.de/shalkislot/{z}/{x}/{y}.png', {
+  L.tileLayer('https://tiles.oklabflensburg.de/shalkislot/{z}/{x}/{y}.png', {
     maxZoom: 20,
     maxNativeZoom: 20,
     attribution: '&copy; <a href="https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/LVERMGEOSH" target="_blank" rel="dc:rights">GeoBasis-DE/LVermGeo SH</a>/<a href="https://creativecommons.org/licenses/by/4.0" target="_blank" rel="dc:rights">CC BY 4.0</a>'
