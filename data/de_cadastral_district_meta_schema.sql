@@ -17,8 +17,9 @@ CREATE INDEX IF NOT EXISTS idx_official_muni_key ON de_cadastral_district_meta (
 CREATE INDEX IF NOT EXISTS idx_cadastral_district_num ON de_cadastral_district_meta (cadastral_district_number);
 
 -- GIN INDEXES
-CREATE INDEX IF NOT EXISTS idx_muni_name_trgm ON de_cadastral_district_meta USING GIN (municipality_name gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_municipality_name_trgm ON de_cadastral_district_meta USING GIN (municipality_name gin_trgm_ops);
 CREATE INDEX IF NOT EXISTS idx_cadastral_district_name_trgm ON de_cadastral_district_meta USING GIN (cadastral_district_name gin_trgm_ops);
+
 
 -- UNIQUE INDEX
 CREATE UNIQUE INDEX IF NOT EXISTS idx_uniq_muni_key_district_num ON de_cadastral_district_meta (

@@ -27,16 +27,10 @@ CREATE TABLE IF NOT EXISTS sh_alkis_parcel (
   wkb_geometry GEOMETRY(POLYGON, 4326)
 );
 
-
--- UNIQUE INDEX
-CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_parcel ON sh_alkis_parcel (
-  adv_id,
-  cadastral_district_number,
-  parcel_number
-);
-
 -- GIN INDEX
-CREATE INDEX IF NOT EXISTS idx_sh_alkis_parcel_number_text ON sh_alkis_parcel ((parcel_number::TEXT));
+CREATE INDEX IF NOT EXISTS idx_parcel_num_trgm ON sh_alkis_parcel USING GIN (CAST(parcel_number AS TEXT) gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_field_num_trgm ON sh_alkis_parcel USING GIN (CAST(field_number AS TEXT) gin_trgm_ops);
+
 
 -- GEOMETRY INDEX
 CREATE INDEX IF NOT EXISTS idx_sh_alkis_parcel_geometry ON sh_alkis_parcel USING GIST (wkb_geometry);
