@@ -105,7 +105,7 @@ function cleanParcelMeta() {
 
 
 function fetchParcelMeta(lat, lng) {
-  const url = `https://api.oklabflensburg.de/alkis/v1/parcel?lat=${lat}&lng=${lng}`
+  const url = `https://api.oklabflensburg.de/administrative/v1/parcel?lat=${lat}&lng=${lng}`
 
   try {
     fetch(url, {
