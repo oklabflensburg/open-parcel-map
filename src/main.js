@@ -45,13 +45,23 @@ function renderParcelMeta(data) {
     map.removeLayer(currentLayer)
   }
 
-  const feature = JSON.parse(data['geojson'])
+  const geoJsonData = {
+    'type': 'FeatureCollection',
+    'features': [{
+      'type': 'Feature',
+      'geometry': {
+        'type': data['geojson']['type'],
+        'coordinates': data['geojson']['coordinates']
+      },
+      'properties': {}
+    }]
+  }
 
-  currentLayer = L.geoJSON(feature, {
+  currentLayer = L.geoJSON(geoJsonData, {
     style: {
-      color: '#0069f6',
-      fillOpacity: 0.1,
-      weight: 2
+      color: '#333',
+      weight: 2,
+      fillOpacity: 0.1
     }
   }).addTo(map)
 
