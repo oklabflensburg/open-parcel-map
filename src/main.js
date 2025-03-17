@@ -29,13 +29,11 @@ function formatDate(value) {
 
 
 function formatToAreaNumber(number) {
-  let value = number
-  let unit = 'ha'
-
-  value = new Intl.NumberFormat('de-DE', {
+  const unit = 'ha'
+  const value = new Intl.NumberFormat('de-DE', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
-  }).format(value)
+  }).format(number)
 
   return `${value} ${unit}`
 }
