@@ -2,17 +2,54 @@
 <html prefix="og: https://ogp.me/ns#" lang="de">
 <head>
     <meta charset="utf-8">
-    <title>ALKIS Flurstücksauskunft Schleswig-Holstein</title>
-    <meta content="ALKIS® Flurstücksauskunft Schleswig-Holstein tbd.">
+    <title>ALKIS Flurstücksauskunft Schleswig-Holstein – Digitale Flurstücke</title>
+    <meta name="description" content="Interaktive Flurstücksauskunft für Schleswig-Holstein – ohne Eigentümerangaben. Bereitgestellt vom OK Lab Flensburg mit ALKIS-Daten des Landesamts für Vermessung und Geoinformation.">
+    <meta name="keywords" content="Flurstück, Kataster, ALKIS, Schleswig-Holstein, Grundstück, Geodaten, Vermessung">
+    <meta name="author" content="OK Lab Flensburg">
+
     <meta property="og:locale" content="de_DE">
     <meta property="og:title" content="ALKIS Flurstücksauskunft Schleswig-Holstein">
     <meta property="og:site_name" content="ALKIS Flurstücksauskunft Schleswig-Holstein">
     <meta property="og:url" content="https://flurstuecksauskunft.oklabflensburg.de">
-    <meta property="og:description" content="ALKIS Flurstücksauskunft ohne Eigentümerangaben mit den Datensatz vom Landesamt für Vermessung und Geoinformation Schleswig-Holstein">
+    <meta property="og:description" content="Interaktive Flurstücksauskunft für Schleswig-Holstein – ohne Eigentümerangaben, bereitgestellt mit ALKIS-Daten des Landesamts für Vermessung und Geoinformation.">
     <meta property="og:type" content="website">
+
     <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link href="main.css" rel="stylesheet">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Was ist die ALKIS Flurstücksauskunft?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Die ALKIS Flurstücksauskunft ist eine interaktive Plattform zur Anzeige von Flurstücken in Schleswig-Holstein, ohne Eigentümerangaben. Sie wurde vom OK Lab Flensburg entwickelt."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Welche Datenquellen werden genutzt?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Die Daten stammen aus dem ALKIS-Datensatz Schleswig-Holsteins, bereitgestellt durch das Landesamt für Vermessung und Geoinformation."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Wie oft werden die Daten aktualisiert?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Die Daten werden regelmäßig aktualisiert. Die letzte Aktualisierung dieser Website war am 17. März 2025."
+                }
+            }
+        ]
+    }
+    </script>
 </head>
 
 <body class="relative flex justify-center flex-col h-dvh w-full">
@@ -41,21 +78,35 @@
         </a>
       </div>
 
-      <div id="sidebarHeader" class="py-2 px-3 mb-4 lg:mb-8">
-        <h1 class="tracking-normal leading-normal font-bold text-2xl md:text-3xl lg:text-4xl mb-1">Flurstücksauskunft</h1>
-        <h2><a href="/" class="text-xl md:text-2xl text-gray-700 hover:text-blue-700 focus:text-blue-800" title="Schleswig-Holstein">Für Sie in Schleswig-Holstein</a></h2>
-      </div>
+        <div id="sidebarHeader" class="p-4 border-b border-gray-300">
+          <h1 class="text-2xl font-bold">Flurstücksauskunft</h1>
+          <h2><a href="/" class="text-lg text-gray-700 hover:text-blue-700">Für Sie in Schleswig-Holstein</a></h2>
+        </div>
 
-      <div class="mt-3 md:mt-6 py-2 px-3" id="about">
-        <h3 class="font-bold text-xl md:text-2xl mb-1">Hintergrund</h3>
-        <p class="font-normal leading-normal text-md lg:text-lg mb-3 md:mb-6">Diese interaktive nicht amtliche Flurstücksauskunft ohne Eigentümerangaben für Schleswig-Holstein entstand nach Gesprächen mit Bürgerinitiativen durch das OK Lab Flensburg um Verwaltungs-, Kreis-, Gemeindegrenzen, Gemarkungen und Flurstücke digital zugänglich zu machen. Wir freuen uns über Anregungen, Kritik oder Ergänzungen – schreiben Sie uns gerne eine <a class="contact-mail text-blue-600 hover:text-blue-400 focus:text-blue-400" href="" target="_blank"></a>.</p>
-        <h3 class="font-bold text-xl md:text-2xl mb-1">Datenquelle</h3>
-        <p class="font-normal leading-normal text-md lg:text-lg mb-3 md:mb-6">Der Datensatz ALKIS Schleswig-Holstein ohne Eigentümerangaben, wird durch das Landesamt für Vermessung und Geoinformation über den Atom Feed Viewer <a class="text-blue-600 hover:text-blue-400 focus:text-blue-400" href="https://service.gdi-sh.de/AtomFeedViewer?feed=https://service.gdi-sh.de/SH_OpenGBD/feeds/Atom_SH_ALKIS_vereinf_OpenGBD/Atom_SH_ALKIS_vereinf_OpenGBD.xml" target="_blank">zum Download</a> zur Verfügung gestellt. Die ALKIS Flurstücksauskunft für Schleswig-Holstein wird von engagierten ehrenamtlichen Mitgliedern des <a class="text-blue-600 hover:text-blue-400 focus:text-blue-400" href="https://oklabflensburg.de" target="_blank">OK Lab Flensburgs</a> entwickelt.</p>
-        <h3 class="font-bold text-xl md:text-2xl mb-1">Aktualität</h3>
-        <p class="font-normal leading-normal text-md lg:text-lg mb-3 md:mb-6">Diese Website wurde zuletzt am 17. März 2025 aktualisiert.</p>
-        <h3 class="font-bold text-xl md:text-2xl mb-1">Quellcode</h3>
-        <p class="font-normal leading-normal text-md lg:text-lg">Der aktuelle Entwicklungsstand kann auf <a class="text-blue-600 hover:text-blue-400 focus:text-blue-400" href="https://github.com/oklabflensburg/open-parcel-map" target="_blank">GitHub</a> eingesehen werden und von jeder Person, Kommune, Stadt oder Land kostenfrei und lizenzfrei genutzt und redeployed werden.</p>
-      </div>
+        <div class="mt-3 md:mt-6 py-2 px-3" id="about">
+          <h3 class="font-bold text-xl md:text-2xl mb-1">Willkommen!</h3>
+          <p class="font-normal leading-normal text-md lg:text-lg mb-3 md:mb-6">
+            Diese interaktive Karte wurde vom OK Lab Flensburg gemeinsam mit Bürgerinitiativen entwickelt, um Verwaltungsgrenzen, Gemarkungen und Flurstücke in Schleswig-Holstein digital und leicht zugänglich zu machen. Sie enthält keine Eigentümerangaben.
+          </p>
+          <p class="font-normal leading-normal text-md lg:text-lg mb-3 md:mb-6">
+            Haben Sie Fragen oder Anregungen? Wir freuen uns über Ihr Feedback! Schreiben Sie uns gerne eine <a class="contact-mail text-blue-600 hover:text-blue-400 focus:text-blue-400" href="#" target="_blank">E-Mail</a>.
+          </p>
+
+          <h3 class="font-bold text-xl md:text-2xl mb-1">Datenquelle</h3>
+          <p class="font-normal leading-normal text-md lg:text-lg mb-3 md:mb-6">
+            Die Daten stammen aus dem ALKIS Schleswig-Holstein-Datensatz, der vom Landesamt für Vermessung und Geoinformation bereitgestellt wird. Der aktuelle Datensatz kann über den <a class="text-blue-600 hover:text-blue-400 focus:text-blue-400" href="https://service.gdi-sh.de/AtomFeedViewer?feed=https://service.gdi-sh.de/SH_OpenGBD/feeds/Atom_SH_ALKIS_vereinf_OpenGBD/Atom_SH_ALKIS_vereinf_OpenGBD.xml" target="_blank">Atom Feed Viewer</a> heruntergeladen werden. Die technische Umsetzung erfolgt durch engagierte ehrenamtliche Mitglieder des <a class="text-blue-600 hover:text-blue-400 focus:text-blue-400" href="https://oklabflensburg.de" target="_blank">OK Lab Flensburg</a>.
+          </p>
+
+          <h3 class="font-bold text-xl md:text-2xl mb-1">Aktualität</h3>
+          <p class="font-normal leading-normal text-md lg:text-lg mb-3 md:mb-6">
+            Diese Website wurde zuletzt am 17. März 2025 aktualisiert.
+          </p>
+
+          <h3 class="font-bold text-xl md:text-2xl mb-1">Quellcode & Nutzung</h3>
+          <p class="font-normal leading-normal text-md lg:text-lg">
+            Der aktuelle Entwicklungsstand ist auf <a class="text-blue-600 hover:text-blue-400 focus:text-blue-400" href="https://github.com/oklabflensburg/open-parcel-map" target="_blank">GitHub</a> verfügbar. Jede Person, Kommune oder Institution kann ihn kostenlos nutzen und weiterentwickeln.
+          </p>
+        </div>
 
       <div id="sidebarContent" class="relative bg-white border border-slate-300 leading-normal lg:text-lg m-3 rounded text-black text-md hidden">
         <ul class="p-3 space-y-3" id="detailList"></ul>

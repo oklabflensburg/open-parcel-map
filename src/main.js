@@ -24,7 +24,7 @@ function formatPlaceName(placeName) {
 
 function formatDate(value) {
   const date = new Date(value)
-  return date.toLocaleDateString('de-DE');
+  return date.toLocaleDateString('de-DE')
 }
 
 
@@ -124,6 +124,7 @@ function renderParcelMeta(data) {
   document.querySelector('#sidebar').classList.add('absolute')
   document.querySelector('#about').classList.add('hidden')
   document.querySelector('#sidebarContent').classList.remove('hidden')
+  document.querySelector('#sidebarContentCloseButton').classList.remove('hidden')
 }
 
 
@@ -207,6 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#sidebar').classList.add('sm:h-dvh')
     document.querySelector('#sidebar').classList.remove('absolute', 'h-dvh')
     document.querySelector('#sidebarCloseWrapper').classList.add('hidden')
+    document.querySelector('#sidebarContentCloseButton').classList.add('hidden')
 
     history.replaceState({ screen: 'home' }, '', '/')
   })
