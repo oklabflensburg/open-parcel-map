@@ -22,6 +22,12 @@ function formatPlaceName(placeName) {
 }
 
 
+function formatDate(value) {
+  const date = new Date(value)
+  return date.toLocaleDateString('de-DE');
+}
+
+
 function formatToAreaNumber(number) {
   let value = number
   let unit = 'ha'
@@ -97,6 +103,15 @@ function renderParcelMeta(data) {
 
   if (data['district_number'] !== null) {
     detailOutput += `<li><strong>Kreisschlüssel</strong><br>${data['district_number']}</li>`
+  }
+
+  if (data['place_description'] !== null) {
+    detailOutput += `<li><strong>Lage Beschreibung</strong><br>${data['place_description']}</li>`
+  }
+
+  if (data['last_update'] !== null) {
+    const date = formatDate(data['last_update'])
+    detailOutput += `<li><strong>Aktualität</strong><br>${date}</li>`
   }
 
   if (data['area_hectares'] > 0) {
