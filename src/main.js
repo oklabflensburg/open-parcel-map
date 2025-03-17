@@ -24,12 +24,7 @@ function formatPlaceName(placeName) {
 
 function formatToAreaNumber(number) {
   let value = number
-  let unit = 'qm'
-
-  if (number > 2000) {
-    value = Number(number) / 10000
-    unit = 'ha'
-  }
+  let unit = 'ha'
 
   value = new Intl.NumberFormat('de-DE', {
     minimumFractionDigits: 2,
@@ -59,13 +54,14 @@ function renderParcelMeta(data) {
 
   currentLayer = L.geoJSON(geoJsonData, {
     style: {
-      color: '#333',
+      color: '#2463eb',
       weight: 2,
       fillOpacity: 0.1
     }
   }).addTo(map)
 
   map.fitBounds(currentLayer.getBounds())
+  console.log(data)
 
   let detailOutput = ''
 
@@ -81,17 +77,32 @@ function renderParcelMeta(data) {
     detailOutput += `<li><strong>Gemarkung</strong><br>${data['cadastral_district_name']}</li>`
   }
 
-  if (data['municipality_name'] !== null) {
-    const placeName = formatPlaceName(data['municipality_name'])
-    detailOutput += `<li><strong>Gemeinde</strong><br>${placeName}</li>`
+  if (data['cadastral_district_number'] !== null) {
+    detailOutput += `<li><strong>Gemarkungsschlüssel</strong><br>${data['cadastral_district_number']}</li>`
   }
 
-  if (data['shape_area'] > 0) {
-    const areaNumber = formatToAreaNumber(data['shape_area'])
+  if (data['municipality_name'] !== null) {
+    const municipalityName = formatPlaceName(data['municipality_name'])
+    detailOutput += `<li><strong>Gemeinde</strong><br>${municipalityName}</li>`
+  }
+
+  if (data['municipality_number'] !== null) {
+    detailOutput += `<li><strong>Gemeindeschlüssel</strong><br>${data['municipality_number']}</li>`
+  }
+
+  if (data['district_name'] !== null) {
+    const districtName = formatPlaceName(data['district_name'])
+    detailOutput += `<li><strong>Kreis</strong><br>${districtName}</li>`
+  }
+
+  if (data['district_number'] !== null) {
+    detailOutput += `<li><strong>Kreisschlüssel</strong><br>${data['district_number']}</li>`
+  }
+
+  if (data['area_hectares'] > 0) {
+    const areaNumber = formatToAreaNumber(data['area_hectares'])
     detailOutput += `<li><strong>Fläche</strong><br>${areaNumber}</li>`
   }
-
-  const detailList = document.querySelector('#detailList')
 
   document.querySelector('#detailList').innerHTML = detailOutput
   document.querySelector('#sidebar').classList.remove('hidden')
@@ -155,15 +166,6 @@ document.addEventListener('DOMContentLoaded', function () {
     maxNativeZoom: 20,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="dc:rights">OpenStreetMap</a> contributors'
   }).addTo(map)
-
-  /*
-  L.tileLayer('https://tiles.oklabflensburg.de/nksh/{z}/{x}/{y}.png', {
-    opacity: 0.4,
-    maxZoom: 20,
-    maxNativeZoom: 20,
-    attribution: '&copy; <a href="https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/LFU" target="_blank" rel="dc:rights">LfU SH</a>/<a href="https://www.govdata.de/dl-de/by-2-0" target="_blank" rel="dc:rights">dl-de/by-2-0</a>'
-  }).addTo(map)
-  */
 
   L.tileLayer('https://tiles.oklabflensburg.de/shalkislot/{z}/{x}/{y}.png', {
     maxZoom: 20,

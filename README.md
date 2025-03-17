@@ -83,6 +83,17 @@ DB_PORT=5432
 
 ## Download ALKIS®
 
+From march 2025 you will get the latest ALKIS® download from [Atom Feed Viewer](https://service.gdi-sh.de/AtomFeedViewer?feed=https://service.gdi-sh.de/SH_OpenGBD/feeds/Atom_SH_ALKIS_vereinf_OpenGBD/Atom_SH_ALKIS_vereinf_OpenGBD.xml)
+
+```sh
+psql -U oklab -h localhost -d oklab -p 5432 -c "\COPY (select ags from vg250_gem where ags like '01%' and gf = 4 ORDER BY ags DESC) TO 'vg250_gem_ags_sh.csv' WITH CSV DELIMITER ',' HEADER;"
+for i in $(cat vg250_gem_ags_sh.csv); do wget 'https://dienste.gdi-sh.de/WFS_SH_ALKIS_vereinf_OpenGBD?Request=GetFeature&Service=WFS&Version=2.0.0&gemeindeschluessel='$i'&StoredQuery_ID=GetFlstByGemeinde'; done
+for i in $(ls WFS*); do ogr2ogr -update -append -f "PostgreSQL" PG:"host=localhost port=5432 dbname=oklab user=oklab active_schema=postgres" -t_srs EPSG:4326 $i -progress; done
+```
+
+
+## Deprecated Download ALKIS®
+
 Tool to automate the download from the opendata [ALKIS®](https://geodaten.schleswig-holstein.de/gaialight-sh/_apps/dladownload/dl-alkis.html) files for Schleswig-Holstein
 
 ```
