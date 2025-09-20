@@ -1,197 +1,225 @@
-import os
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import json
 import sys
 import time
-import click
-import httpx
 import traceback
 import logging as log
-import magic
 
-from httpx import ReadTimeout
-from fake_useragent import UserAgent
 from pathlib import Path
+from typing import Iterable, List, Optional
+from urllib.parse import parse_qs, urlparse
 
+import click
+import httpx
+from fake_useragent import UserAgent
+
+
+DEFAULT_OUTPUT_DIR = Path('../data/sh/alkis')
+USER_AGENT_FALLBACK = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 
 
 # log uncaught exceptions
-def log_exceptions(type, value, tb):
-    for line in traceback.TracebackException(type, value, tb).format(chain=True):
+def log_exceptions(exc_type, value, tb):
+    for line in traceback.TracebackException(exc_type, value, tb).format(chain=True):
         log.exception(line)
 
     log.exception(value)
 
-    sys.__excepthook__(type, value, tb) # calls default excepthook
+    sys.__excepthook__(exc_type, value, tb)
 
 
-def save_download(download_path, data):
-    directories = Path(download_path).parent.resolve()
-    Path(directories).mkdir(parents=True, exist_ok=True)
+def resolve_output_dir(path: Optional[Path]) -> Path:
+    if path and path.is_dir():
+        return path.resolve()
 
-    try:
-        with open(download_path, 'wb') as f:
-            f.write(data)
-    except PermissionError as e:
-        log.error(e)
+    if path and not path.exists():
+        return path.resolve()
 
-    log.info(f'saved archieve to {download_path}')
+    return DEFAULT_OUTPUT_DIR.resolve()
 
 
-def get_mime_type(download_path):
-    mime_type = magic.from_file(download_path, mime=True)
-
-    return mime_type
+def ensure_directory(path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
 
 
-def rename_download(download_path, archive_path):
-    os.rename(download_path, archive_path)
-
-
-def download_archive(url):
-    try:
-        r = httpx.get(url, verify=False)
-    except ReadTimeout as e:
-        time.sleep(5)
-        r = download_archive(url)
-
-    if r.status_code == httpx.codes.OK:
-        return r.content
-
-    return None
-
-
-def status_request(job_id, tile_id, tile_gemarkung, tile_flur, user_agent):
-    time_stamp = int(time.time())
-    headers = {'Content-Type': 'application/json', 'User-Agent': user_agent}
-    url = f'https://geodaten.schleswig-holstein.de/gaialight-sh/_apps/dladownload/multi.php?action=status&job={job_id}&_={time_stamp}'
-    data = None
-
-    r = httpx.get(url, headers=headers, verify=False)
-
-    if r.status_code != httpx.codes.OK:
-        log.error(f'request failed with status {r.status_code}')
-
-        return
-
-    data = r.json()
+def save_download(download_path: Path, data: bytes) -> None:
+    ensure_directory(download_path)
 
     try:
-        while data is not None and data['status'] != 'done':
-            time.sleep(1)
-            data = status_request(job_id, tile_id, tile_gemarkung, tile_flur, user_agent)
-    except Exception as e:
-        log.error(f'{e} bei tile_id: {tile_id} in der Gemarkung: {tile_gemarkung} und Flurstück: {tile_flur}')
-
+        with open(download_path, 'wb') as file_handle:
+            file_handle.write(data)
+    except PermissionError as error:
+        log.error(error)
         return
 
-    if data is not None and data['success'] is False:
-        msg = reponse_status['msg']
-        log.error(f'{msg} bei tile_id: {tile_id} in der Gemarkung: {tile_gemarkung} und Flurstück: {tile_flur}')
-
-        return
-
-    return data
+    log.info('saved archive to %s', download_path)
 
 
-def job_request(tile_id, tile_flur, user_agent):
-    time_stamp = int(time.time())
-    headers = {'Content-Type': 'application/json', 'User-Agent': user_agent}
-    url = f'https://geodaten.schleswig-holstein.de/gaialight-sh/_apps/dladownload/multi.php?url={tile_flur}.xml.gz&buttonClass=file1&id={tile_id}&type=alkis&action=start&_={time_stamp}'
-
-    r = httpx.get(url, headers=headers, verify=False)
-
-    if r.status_code == httpx.codes.OK:
-        return r.json()
-
-    return {}
-
-
-def tile_request(tile_id, user_agent):
-    headers = {'Content-Type': 'application/json', 'User-Agent': user_agent}
-    url = f'https://geodaten.schleswig-holstein.de/gaialight-sh/_apps/dladownload/_ajax/details.php?type=alkis&id={tile_id}'
-
-    r = httpx.get(url, headers=headers, verify=False)
-
-    if r.status_code == httpx.codes.OK:
-        return r.json()
-
-    return {}
-
-
-def fetch_data(tile_id, path, verbose):
-    ua = UserAgent()
-    user_agent = ua.random
-
-    response_tile = tile_request(tile_id, user_agent)
-
-    if response_tile['success'] is False:
-        log.error(response_tile['message'])
-
-        return
-    else:
-        log.info(response_tile)
-
-    tile_flur = response_tile['object']['flur']
-    tile_gemarkung = response_tile['object']['gemarkung']
-
-    response_job = job_request(tile_id, tile_flur, user_agent)
-    log.info(response_job)
-
-    if response_job['success'] is False:
-        msg = response_job['message']
-        log.error(f'{msg} mit der {tile_id} mit der Gemarkung {tile_gemarkung} und Flustück {tile_flur}')
-
-        return
-
-    while response_job['success'] is not True:
-        time.sleep(1)
-        response_job = job_request(tile_id, tile_flur, user_agent)
-        log.info(response_job)
-
-    job_id = response_job['id']
-
-    reponse_status = status_request(job_id, tile_id, tile_gemarkung, tile_flur, user_agent)
-    log.info(reponse_status)
-
+def get_user_agent() -> str:
     try:
-        data = download_archive(reponse_status['downloadUrl'])
+        return UserAgent().random
+    except Exception as error:  # pragma: no cover - network/database errors from fake_useragent
+        log.debug('failed to create random user agent, using fallback: %s', error)
+        return USER_AGENT_FALLBACK
 
-        file_name = f'{tile_id}_{tile_flur}'
 
-        if path is not None and Path(path).is_dir():
-            download_path = Path(f'{path}/sh/alkis/{file_name}.zip').resolve()
-        else:
-            download_path = Path(f'../data/sh/alkis/{file_name}.zip').resolve()
+def load_geojson(source: str) -> dict:
+    if source.startswith(('http://', 'https://')):
+        with httpx.Client(verify=False, timeout=30.0) as client:
+            response = client.get(source)
+            response.raise_for_status()
+            return response.json()
 
-        save_download(download_path, data)
-    except Exception as e:
-        log.error(f'{e} bei tile_id: {tile_id} in der Gemarkung: {tile_gemarkung} und Flurstück: {tile_flur}')
+    path = Path(source).expanduser().resolve()
 
-        return
+    with open(path, 'r', encoding='utf-8') as file_handle:
+        return json.load(file_handle)
+
+
+def extract_features(geojson: dict) -> List[dict]:
+    if geojson.get('type') != 'FeatureCollection':
+        raise ValueError('GeoJSON must be a FeatureCollection')
+
+    features = geojson.get('features')
+
+    if not isinstance(features, list):
+        raise ValueError('GeoJSON FeatureCollection is missing a features array')
+
+    return features
+
+
+def slice_features(features: List[dict], start: int, end: Optional[int]) -> Iterable[dict]:
+    if start < 0:
+        raise ValueError('start_index cannot be negative')
+
+    if end is not None and end < start:
+        raise ValueError('end_index must be greater than or equal to start_index')
+
+    return features[start:end]
+
+
+def derive_filename(properties: dict, link: Optional[str]) -> str:
+    if link:
+        parsed = urlparse(link)
+        query_file = parse_qs(parsed.query).get('file')
+
+        if query_file and query_file[0]:
+            return query_file[0]
+
+        link_name = Path(parsed.path).name
+
+        if link_name:
+            return link_name
+
+    flur = properties.get('flur')
+    if flur:
+        return f'{flur}.xml.gz'
+
+    gemarkung = properties.get('gemarkung')
+    if gemarkung:
+        return f'{gemarkung}.xml.gz'
+
+    schlgmd = properties.get('schlgmd')
+    if schlgmd:
+        return f'{schlgmd}.xml.gz'
+
+    return 'download.xml.gz'
+
+
+def build_download_path(properties: dict, output_dir: Path, link: Optional[str]) -> Path:
+    quartal = properties.get('quartal')
+    filename = derive_filename(properties, link)
+
+    if quartal:
+        return output_dir / quartal / filename
+
+    return output_dir / filename
+
+
+def download_archive(url: str, client: httpx.Client, user_agent: str, retries: int = 3, backoff: float = 2.0) -> bytes:
+    headers = {'User-Agent': user_agent}
+    last_error: Optional[Exception] = None
+
+    for attempt in range(1, retries + 1):
+        try:
+            response = client.get(url, headers=headers)
+            response.raise_for_status()
+            return response.content
+        except (httpx.HTTPStatusError, httpx.RequestError) as error:
+            last_error = error
+            log.warning('attempt %s/%s failed for %s: %s', attempt, retries, url, error)
+
+            if attempt < retries:
+                time.sleep(backoff * attempt)
+
+    raise RuntimeError(f'failed to download {url}') from last_error
 
 
 @click.command()
-@click.option('--debug', '-d', is_flag=True, help='Print more debug output')
+@click.option('--debug', '-d', is_flag=True, help='Print debug output')
 @click.option('--verbose', '-v', is_flag=True, help='Print more verbose output')
-@click.option('--path', '-p', type=str, help='Set the source output format')
-@click.argument('start', type=int, nargs=1)
-@click.argument('end', type=int, nargs=1)
-def main(start, end, path, verbose, debug):
+@click.option('--output', '-o', 'output_path', type=click.Path(file_okay=False, resolve_path=True, path_type=Path), help='Target directory for downloads')
+@click.option('--geojson', '-g', 'geojson_source', required=True, type=str, help='Path or URL to the GeoJSON index')
+@click.option('--start-index', '-s', default=0, show_default=True, type=int, help='Start index (inclusive) within the GeoJSON features array')
+@click.option('--end-index', '-e', default=None, type=int, help='End index (exclusive) within the GeoJSON features array')
+@click.option('--dry-run', is_flag=True, help='Only print which files would be downloaded')
+@click.option('--skip-existing/--force', default=True, show_default=True, help='Skip downloads if the target file already exists')
+@click.option('--timeout', default=30.0, show_default=True, type=float, help='HTTP timeout in seconds')
+def main(geojson_source: str, output_path: Optional[Path], verbose: bool, debug: bool, start_index: int, end_index: Optional[int], dry_run: bool, skip_existing: bool, timeout: float):
     if debug:
         log.basicConfig(format='%(levelname)s: %(message)s', level=log.DEBUG)
-    if verbose:
+    elif verbose:
         log.basicConfig(format='%(levelname)s: %(message)s', level=log.INFO)
     else:
         log.basicConfig(format='%(levelname)s: %(message)s')
 
-    if not start <= end:
-        log.error('argument start must be greater as end')
+    try:
+        geojson = load_geojson(geojson_source)
+        features = extract_features(geojson)
+        selected_features = list(slice_features(features, start_index, end_index))
+    except Exception as error:
+        log.error('failed to prepare feature list: %s', error)
         sys.exit(1)
 
-    for tile_id in range(start, end):
-        fetch_data(tile_id, path, verbose)
+    if not selected_features:
+        log.info('no features selected for download')
+        return
+
+    output_dir = resolve_output_dir(output_path)
+    user_agent = get_user_agent()
+
+    log.info('downloading %s feature(s) to %s', len(selected_features), output_dir)
+
+    with httpx.Client(verify=False, timeout=timeout) as client:
+        for index, feature in enumerate(selected_features, start=start_index):
+            properties = feature.get('properties', {})
+            link = properties.get('link_data')
+
+            if not link:
+                log.warning('feature #%s has no link_data property; skipping', index)
+                continue
+
+            download_path = build_download_path(properties, output_dir, link)
+
+            if skip_existing and download_path.exists():
+                log.info('skipping existing file %s', download_path)
+                continue
+
+            if dry_run:
+                log.info('dry run: would download %s to %s', link, download_path)
+                continue
+
+            try:
+                data = download_archive(link, client, user_agent)
+            except Exception as error:
+                log.error('failed to download %s: %s', link, error)
+                continue
+
+            save_download(download_path, data)
 
 
 if __name__ == '__main__':
-    print(sys.getrecursionlimit())
     sys.excepthook = log_exceptions
     main()
