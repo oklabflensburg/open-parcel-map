@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS sh_alkis_parcel (
   numerator INT,
   different_legal_status BOOLEAN,
   start_time TIMESTAMP WITH TIME ZONE,
-  wkb_geometry GEOMETRY(POLYGON, 4326)
+  wkb_geometry GEOMETRY(MULTIPOLYGON, 4326)
 );
 
 -- GIN INDEX

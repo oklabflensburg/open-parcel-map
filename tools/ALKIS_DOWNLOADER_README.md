@@ -88,5 +88,3 @@ python tools/alkis_downloader.py --geojson <geojson> --force
 - Use `--dry-run` on large GeoJSON files to confirm that your `start-index` and `end-index` arguments select the intended features.
 - Pair the downloader with a cron job or CI task by pointing to a remote GeoJSON URL (authentication is not handled).
 - For reproducibility, pin your dependencies with `tools/requirements.txt` and keep the virtual environment isolated.
-
-Feel free to adjust or expand the README to include organisation-specific instructions or conventions.

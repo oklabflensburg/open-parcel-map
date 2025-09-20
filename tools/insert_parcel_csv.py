@@ -1,5 +1,4 @@
 import os
-import re
 import sys
 import click
 import traceback
@@ -76,13 +75,11 @@ def insert_row(cur, row):
     denominator = parse_value(row.get('nenner'), int)
     numerator = parse_value(row.get('zaehler'), int)
     different_legal_status = parse_value(row.get('abweichender_rechtszustand'), str_to_bool)
-    wkt_geometry = row.get('wkt_geometry')
+    wkt_geometry = parse_value(row.get('wkt_geometry'))
 
-    # Parse the identifier and the polygon coordinates
-    match = re.match(r'Polygon\(\((.*?)\)\)', wkt_geometry)
-    coordinates = match.group(1)
-
-    wkt_geometry = f'POLYGON(({coordinates}))'
+    if not wkt_geometry:
+        log.error(f'skipping {adv_id}: missing geometry')
+        return
 
     sql = '''
         INSERT INTO sh_alkis_parcel (adv_id, start_time, state_number,
@@ -90,7 +87,9 @@ def insert_row(cur, row):
             cadastral_district_number, field_number_original, denominator, numerator,
             different_legal_status, wkb_geometry)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-            ST_AsBinary(ST_Transform(ST_GeomFromText(%s, 25832), 4326))) RETURNING id
+            ST_AsBinary(
+                ST_Multi(ST_Transform(ST_GeomFromText(%s, 25832), 4326))
+            )) RETURNING id
     '''
 
     try:
