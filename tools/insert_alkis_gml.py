@@ -34,6 +34,7 @@ import psycopg2
 from dotenv import load_dotenv
 from psycopg2.extensions import connection as PsycopgConnection
 from psycopg2.extensions import cursor as PsycopgCursor
+from psycopg2.extras import execute_values
 from psycopg2.sql import SQL, Identifier
 
 
@@ -441,6 +442,31 @@ def insert_parcel(cursor: PsycopgCursor, data: dict[str, t.Any]) -> None:
     cursor.execute(sql, data)
 
 
+def insert_batch(cursor: PsycopgCursor, rows: list[dict[str, t.Any]]) -> None:
+    if not rows:
+        return
+
+    sql = SQL(
+        """
+        INSERT INTO {table} (
+            adv_id, start_time, state_number,
+            administrative_district_number, county_number, municipality_number,
+            cadastral_district_number, field_number_original, denominator, numerator,
+            different_legal_status, wkb_geometry
+        ) VALUES %s
+        """
+    ).format(table=Identifier("sh_alkis_parcel"))
+
+    template = (
+        "(%(adv_id)s, %(start_time)s, %(state_number)s, %(administrative_district_number)s,"
+        " %(county_number)s, %(municipality_number)s, %(cadastral_district_number)s,"
+        " %(field_number_original)s, %(denominator)s, %(numerator)s, %(different_legal_status)s,"
+        " ST_AsBinary(ST_Multi(ST_Transform(ST_GeomFromText(%(wkt_geometry)s, 25832), 4326))))"
+    )
+
+    execute_values(cursor, sql.as_string(cursor), rows, template=template)
+
+
 def collect_sources(inputs: tuple[Path, ...], recursive: bool) -> list[Path]:
     patterns = ("*.xml", "*.xml.gz", "*.nas", "*.nas.gz")
     files: set[Path] = set()
@@ -469,6 +495,7 @@ def process_file(
     cursor: PsycopgCursor,
     stats: ImportStats,
     commit_interval: int,
+    batch_size: int,
     limit: t.Optional[int],
 ) -> bool:
     stats.files_seen += 1
@@ -479,8 +506,12 @@ def process_file(
     skipped_before = stats.parcels_skipped
     errors_before = stats.errors
 
+    batch: list[dict[str, t.Any]] = []
+
     for parcel in iter_flurstuecke(path):
         if limit is not None and stats.parcels_inserted >= limit:
+            if batch:
+                flush_batch(cursor, batch, stats, path, commit_interval, limit)
             return False
 
         stats.parcels_seen += 1
@@ -491,19 +522,15 @@ def process_file(
             stats.parcels_skipped += 1
             continue
 
-        try:
-            insert_parcel(cursor, data)
-        except Exception as error:  # pragma: no cover - database runtime failures
-            stats.errors += 1
-            logging.error("failed to insert parcel %s: %s", data.get("adv_id"), error)
-            cursor.connection.rollback()
-            continue
+        batch.append(data)
 
-        stats.parcels_inserted += 1
+        if batch_size > 0 and len(batch) >= batch_size:
+            if not flush_batch(cursor, batch, stats, path, commit_interval, limit):
+                return False
 
-        if commit_interval > 0 and stats.parcels_inserted % commit_interval == 0:
-            cursor.connection.commit()
-            logging.info("committed %s parcels", stats.parcels_inserted)
+    if batch:
+        if not flush_batch(cursor, batch, stats, path, commit_interval, limit):
+            return False
 
     logging.info(
         "finished %s: seen %s, inserted %s, skipped %s, errors %s",
@@ -513,6 +540,64 @@ def process_file(
         stats.parcels_skipped - skipped_before,
         stats.errors - errors_before,
     )
+
+    return True
+
+
+def flush_batch(
+    cursor: PsycopgCursor,
+    batch: list[dict[str, t.Any]],
+    stats: ImportStats,
+    path: Path,
+    commit_interval: int,
+    limit: t.Optional[int],
+) -> bool:
+    if not batch:
+        return True
+
+    rows = list(batch)
+    batch.clear()
+
+    try:
+        insert_batch(cursor, rows)
+        inserted = len(rows)
+    except Exception as error:  # pragma: no cover - database runtime failures
+        logging.error(
+            "failed to insert batch (%s rows) from %s: %s; falling back to row inserts",
+            len(rows),
+            path,
+            error,
+        )
+        cursor.connection.rollback()
+        inserted = 0
+
+        for row in rows:
+            try:
+                insert_parcel(cursor, row)
+            except Exception as row_error:
+                stats.errors += 1
+                logging.error(
+                    "failed to insert parcel %s: %s",
+                    row.get("adv_id"),
+                    row_error,
+                )
+                cursor.connection.rollback()
+                continue
+
+            inserted += 1
+
+            if commit_interval > 0 and (stats.parcels_inserted + inserted) % commit_interval == 0:
+                cursor.connection.commit()
+                logging.info("committed %s parcels", stats.parcels_inserted + inserted)
+
+    stats.parcels_inserted += inserted
+
+    if commit_interval > 0 and stats.parcels_inserted % commit_interval == 0:
+        cursor.connection.commit()
+        logging.info("committed %s parcels", stats.parcels_inserted)
+
+    if limit is not None and stats.parcels_inserted >= limit:
+        return False
 
     return True
 
@@ -529,10 +614,11 @@ def process_file(
 )
 @click.option("--recursive/--no-recursive", default=True, show_default=True, help="Recurse into sub-directories when --input points to a folder")
 @click.option("--commit-interval", default=500, show_default=True, help="Number of inserts per transaction commit")
+@click.option("--batch-size", default=200, show_default=True, help="Number of parcels to bulk insert at once")
 @click.option("--limit", type=int, help="Stop after inserting this many parcels")
 @click.option("--verbose", "-v", is_flag=True, help="Enable INFO log output")
 @click.option("--debug", "-d", is_flag=True, help="Enable DEBUG log output")
-def main(env_path: Path, inputs: tuple[Path, ...], recursive: bool, commit_interval: int, limit: t.Optional[int], verbose: bool, debug: bool) -> None:
+def main(env_path: Path, inputs: tuple[Path, ...], recursive: bool, commit_interval: int, batch_size: int, limit: t.Optional[int], verbose: bool, debug: bool) -> None:
     """Insert ALKIS parcel geometries into the sh_alkis_parcel table."""
 
     configure_logging(verbose, debug)
@@ -557,7 +643,7 @@ def main(env_path: Path, inputs: tuple[Path, ...], recursive: bool, commit_inter
 
     try:
         for file_path in files:
-            if not process_file(file_path, cursor, stats, commit_interval, limit):
+            if not process_file(file_path, cursor, stats, commit_interval, batch_size, limit):
                 logging.info("limit reached (%s parcels)", stats.parcels_inserted)
                 break
 
